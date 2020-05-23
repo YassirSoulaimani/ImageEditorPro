@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:signature/signature.dart';
 
 class TextEditor extends StatefulWidget {
   @override
@@ -7,6 +9,20 @@ class TextEditor extends StatefulWidget {
 }
 
 class _TextEditorState extends State<TextEditor> {
+  Color pickerC = Color(0xff443a49);
+  Color currentC = Color(0xff443a49);
+  Color currentcolors = Colors.white;
+  var opicity = 0.0;
+  SignatureController _controller =
+      SignatureController(penStrokeWidth: 5, penColor: Colors.green);
+// ValueChanged<Color> callback
+  void changeC(Color color) {
+    setState(() => pickerC = color);
+    var points = _controller.points;
+    _controller =
+        SignatureController(penStrokeWidth: 5, penColor: color, points: points);
+  }
+
   TextEditingController name = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -21,6 +37,32 @@ class _TextEditorState extends State<TextEditor> {
               icon: Icon(FontAwesomeIcons.alignCenter), onPressed: () {}),
           new IconButton(
               icon: Icon(FontAwesomeIcons.alignRight), onPressed: () {}),
+          new IconButton(
+              icon: Icon(FontAwesomeIcons.paintBrush),
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    child: AlertDialog(
+                      title: const Text('Pick a color!'),
+                      content: SingleChildScrollView(
+                        child: ColorPicker(
+                          pickerColor: pickerC,
+                          onColorChanged: changeC,
+                          showLabel: true,
+                          pickerAreaHeightPercent: 0.8,
+                        ),
+                      ),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: const Text('Got it'),
+                          onPressed: () {
+                            setState(() => currentC = pickerC);
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    ));
+              }),
         ],
       ),
       body: Center(
